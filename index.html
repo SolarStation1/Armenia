@@ -344,7 +344,7 @@
                 </div>
 
                 <div>
-                    <h3 style="color: var(--danger-color);">💸 Դուրսբերում</h3>
+                    <h3 style="color: var(--danger-color);">💸 Դուրսբերում (10% միջնորդավճար)</h3>
                     <form id="withdrawForm">
                         <div class="form-group"><label for="withdraw-amount">Դուրսբերվող Գումար ($)</label><input type="number" id="withdraw-amount" placeholder="Նվազագույնը $15" min="15" required></div>
                         <div class="form-group"><label for="withdraw-address">Ձեր Կրիպտո Հասցեն</label><input type="text" id="withdraw-address" placeholder="Օրինակ՝ TJKs9S...4jK" required></div>
@@ -436,6 +436,7 @@
         const REFERRAL_BONUS_PERCENTAGE = 0.10; // Ռեֆերալի եկամտի 10%
         const REGISTRATION_BONUS_AMOUNT = 1.00; 
         const DAILY_BONUS_AMOUNT = 0.10; // Օրական բոնուսի չափը
+        const WITHDRAWAL_FEE_PERCENTAGE = 0.10; // 10% դուրսբերման միջնորդավճար
         
         let promoCodes = {}; 
 
@@ -515,9 +516,12 @@
                             break;
                         case 'PROFIT_ADDED':
                         case 'REFERRAL_BONUS':
+                        case 'REGISTRATION_BONUS': // Ավելացնել Գրանցման Բոնուսը
                             amountDisplay = `+ $ ${tx.amount.toFixed(2)}`;
                             typeText = `✨ Եկամուտ (${tx.source || 'Ներդրում'})`;
                             statusColor = 'positive';
+                            if (tx.type === 'REFERRAL_BONUS') typeText = `👥 Ռեֆերալի Բոնուս`;
+                            if (tx.type === 'REGISTRATION_BONUS') typeText = `🌟 Գրանցման Բոնուս`;
                             break;
                         case 'DAILY_BONUS':
                             amountDisplay = `+ $ ${tx.amount.toFixed(2)}`;
@@ -530,7 +534,10 @@
                             statusColor = 'positive';
                             break;
                         case 'WITHDRAWAL':
-                            amountDisplay = `($ ${tx.amount.toFixed(2)})`;
+                            // Ցույց տալ հարցված գումարը և գանձված գումարը
+                            const requested = tx.amount.toFixed(2);
+                            const deducted = parseFloat(tx.status.match(/Պահված է: ([\d\.]+)\$/)?.[1] || 0).toFixed(2);
+                            amountDisplay = `($ ${requested} | Պահ. ${deducted})`;
                             typeText = `💸 Դուրսբերում`;
                             statusColor = 'negative';
                             break;
@@ -568,18 +575,18 @@
 
 
         // ԿՐԻՊՏՈ ՀԱՍՑԵՆԵՐԻ ՑԱՆԿԸ
-       const cryptoAddresses = {
-            'USDT_TRC20': { display: 'USDT (TRC20)', address: 'TGSpgCgvMssuc2hJhHPokJuwPeDaQFmnFz' },
-            'USDT_ERC20': { display: 'USDT (ERC20)', address: '0x0f5561887410f0623f8ba4a0b14600dd9c988447' },
-            'BTC': { display: 'Bitcoin (BTC)', address: '175bEsfAiTyekrqLGqqf2Pu1XbgDZHm1dQ' },
-            'ETH_ERC20': { display: 'Ethereum (ERC20)', address: '0x0f5561887410f0623f8ba4a0b14600dd9c988447C' },
-            'LTC': { display: 'Litecoin (LTC)', address: 'LPDBiKxu1sCnh1ueSPymd5WdF9rkrCoTES' },
-            'DOGE': { display: 'Dogecoin (DOGE)', address: 'DN97f1Vu6DcxfDWY9Ynrtv9FRjfHdNJvDN' },
-            'BNB_BSC': { display: 'BNB (BSC/BEP20)', address: '0x0f5561887410f0623f8ba4a0b14600dd9c988447' },
-            'XRP': { display: 'Ripple (XRP)', address: 'rNxp4h8apvRis6mJf9Sh8C6iRxfrDWN7AV' },
-            'SOL': { display: 'Solana (SOL)', address: 'BeUn4WNfrmo4absSNhHVJwSwXZNPe5QfJsZwitAeA1fw' }
+        const cryptoAddresses = {
+            'USDT_TRC20': { display: 'USDT (TRC20)', address: 'TRX7k6f8pTJVY5i3qB3k5gW9vX2sD1eZ' },
+            'USDT_ERC20': { display: 'USDT (ERC20)', address: '0x1A2b3c4D5e6F7g8H9i0J1k2L3m4N5o6P7q8R9s0T' },
+            'BTC': { display: 'Bitcoin (BTC)', address: 'bc1qzyxwvutsrponmlkjihgfedcba9876543210' },
+            'ETH_ERC20': { display: 'Ethereum (ERC20)', address: '0x35E8A9b6B09F6d5cE7B2A9E5F4dC3B0a8E7F6d5C' },
+            'LTC': { display: 'Litecoin (LTC)', address: 'ltc1qyzxwvutsrponmlkjihgfedcba9876543210' },
+            'DOGE': { display: 'Dogecoin (DOGE)', address: 'DH5J3F7gH8jK9lM4nO1pQ6rS2tU8vW3xY0zB1c' },
+            'BNB_BSC': { display: 'BNB (BSC/BEP20)', address: '0x6C7d8e9F0G1h2I3j4K5l6M7n8O9p0Q1r2S3t4U5v' },
+            'ADA': { display: 'Cardano (ADA)', address: 'addr1qyrt6g2a4g8h9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z' },
+            'XRP': { display: 'Ripple (XRP)', address: 'rPEPper7kfTD9w2To4CQk6UCzCQkCCjDSx' },
+            'SOL': { display: 'Solana (SOL)', address: 'SoL4nAFB8i7K6mJ5nO4pQ3rS2tU1vW0xY9zB8c7D6e' }
         };
-
 
         // Ֆունկցիա՝ սերվերի (localStorage-ի) տվյալները ստանալու համար
         function getUsersDB() {
@@ -674,27 +681,29 @@
             let totalReferralProfit = 0;
             let hasNewReferralProfit = false;
             const now = new Date().getTime();
-            const todayDate = new Date().toISOString().split('T')[0];
             
             // Ստուգում ենք, թե ովքեր են մեր ռեֆերալները
             for (const email in db) {
                 const referredUser = db[email];
+                // Ստուգել, որ օգտատերը գրանցված է ընթացիկ օգտատիրոջ կոդով
                 if (referredUser.refUsed === user.refCode) {
                     
                     if (referredUser.activeInvestments && referredUser.activeInvestments.length > 0) {
                         
-                        const lastRefPayoutTime = referredUser.lastReferralDailyPayoutTime || '1970-01-01'; 
+                        const lastRefPayoutTime = new Date(referredUser.lastReferralDailyPayoutTime || '1970-01-01').getTime();
+                        const timeDiff = now - lastRefPayoutTime;
+                        const cyclesPassed = Math.floor(timeDiff / MS_PER_DAY);
                         
-                        if (lastRefPayoutTime !== todayDate) {
-                            
+                        if (cyclesPassed > 0) {
                             let referredDailyTotal = referredUser.activeInvestments.reduce((sum, inv) => sum + inv.dailyProfit, 0);
-                            const referralProfit = referredDailyTotal * REFERRAL_BONUS_PERCENTAGE; 
+                            const referralProfitPerDay = referredDailyTotal * REFERRAL_BONUS_PERCENTAGE; 
+                            const totalNewReferralProfit = cyclesPassed * referralProfitPerDay;
 
-                            if (referralProfit > 0) {
-                                totalReferralProfit += referralProfit;
+                            if (totalNewReferralProfit > 0) {
+                                totalReferralProfit += totalNewReferralProfit;
                                 hasNewReferralProfit = true;
                                 
-                                referredUser.lastReferralDailyPayoutTime = todayDate;
+                                referredUser.lastReferralDailyPayoutTime = new Date(lastRefPayoutTime + cyclesPassed * MS_PER_DAY).toISOString().split('T')[0];
                                 db[email] = referredUser; 
                                 
                                 // Գրանցել ռեֆերալի բոնուսը
@@ -702,8 +711,8 @@
                                     transactionId: 'REF' + Date.now() + Math.random(), 
                                     type: 'REFERRAL_BONUS', 
                                     user: userEmail, 
-                                    amount: referralProfit,
-                                    source: `(${referredUser.username} - ${referredUser.activeInvestments.length} ներդրում)`,
+                                    amount: totalNewReferralProfit,
+                                    source: `(${referredUser.username} - ${cyclesPassed} օր)`,
                                     timestamp: new Date().toISOString()
                                 });
                             }
@@ -715,21 +724,6 @@
             if (hasNewReferralProfit) {
                 totalProfitAdded += totalReferralProfit;
                 user.refBonus += totalReferralProfit;
-                user.balance += totalReferralProfit; 
-                currentBalance = user.balance;
-                
-                const refProfitDisplay = `(+${totalReferralProfit.toFixed(2)}$ Ռեֆերալի Բոնուս)`;
-                let profitText = document.getElementById('profit-info').textContent;
-                
-                if (profitText.includes('✅ Ձեր եկամուտը ավելացվել է:')) {
-                    profitText = `✅ Ավելացվել է ${totalProfitAdded.toFixed(2)}$ ընդհանուր եկամուտ։`;
-                } else {
-                     profitText = profitText.replace(/(\+\$?\s*\d+\.\d{2})/g, '').trim(); 
-                     profitText += ` ${refProfitDisplay}`;
-                }
-                
-                document.getElementById('profit-info').textContent = profitText;
-                document.getElementById('profit-info').style.display = 'block';
             }
 
 
@@ -737,21 +731,20 @@
             // 3. ԸՆԴՀԱՆՈՒՐ ԹԱՐՄԱՑՈՒՄ
             // ----------------------------------------------------
             if (totalProfitAdded > 0) {
-                user.balance = currentBalance;
+                user.balance += totalProfitAdded;
+                currentBalance = user.balance;
                 db[userEmail] = user;
                 saveUsersDB(db);
 
                 document.getElementById('current-balance').textContent = `$ ${currentBalance.toFixed(2)}`;
-                if (hasNewPersonalProfit && !hasNewReferralProfit) {
-                    document.getElementById('profit-info').textContent = `✅ Ավելացվել է ${totalProfitAdded.toFixed(2)}$ եկամուտ։`;
-                    document.getElementById('profit-info').style.display = 'block';
-                } else if (!hasNewPersonalProfit && hasNewReferralProfit) {
-                    document.getElementById('profit-info').textContent = `✅ Ավելացվել է ${totalReferralProfit.toFixed(2)}$ եկամուտ (Ռեֆերալի Բոնուս)։`;
-                    document.getElementById('profit-info').style.display = 'block';
-                } else if (hasNewPersonalProfit && hasNewReferralProfit) {
-                     document.getElementById('profit-info').textContent = `✅ Ավելացվել է ${totalProfitAdded.toFixed(2)}$ ընդհանուր եկամուտ։`;
-                     document.getElementById('profit-info').style.display = 'block';
+                
+                let profitText = `✅ Ավելացվել է ${totalProfitAdded.toFixed(2)}$ ընդհանուր եկամուտ։`;
+                if (hasNewReferralProfit && !hasNewPersonalProfit) {
+                    profitText = `✅ Ավելացվել է ${totalReferralProfit.toFixed(2)}$ եկամուտ (Ռեֆերալի Բոնուս)։`;
                 }
+                
+                document.getElementById('profit-info').textContent = profitText;
+                document.getElementById('profit-info').style.display = 'block';
             } else {
                  document.getElementById('profit-info').style.display = 'none';
             }
@@ -769,6 +762,7 @@
                 return;
             }
 
+            // Ստուգել՝ արդյոք ունի ակտիվ ներդրում
             if (!user.activeInvestments || user.activeInvestments.length === 0) {
                 alert("❌ Օրական բոնուսը հասանելի է միայն ակտիվ ներդրում կատարած օգտատերերին։");
                 updateDailyBonusButtonStatus(user); 
@@ -871,7 +865,7 @@
 
              document.getElementById('referralCodeDisplay').textContent = currentRefCode;
              document.getElementById('refCount').textContent = registeredCount; // Թարմացնել քանակը
-             document.getElementById('refBonus').textContent = `$ ${bonusTotal.toFixed(2)}`;
+             document.getElementById('refBonus').textContent = `+ $ ${bonusTotal.toFixed(2)}`;
              
              // Պահպանել registeredCount-ը user օբյեկտում
              if (currentUser) {
@@ -1024,6 +1018,7 @@
                 type: 'REGISTRATION_BONUS', 
                 user: regEmail, 
                 amount: initialBalance,
+                source: `($${initialBalance.toFixed(2)} բոնուս)`,
                 timestamp: new Date().toISOString()
             });
 
@@ -1093,7 +1088,7 @@
                     type: 'PROMO_REDEEM', 
                     user: userEmail, 
                     amount: bonusAmount,
-                    code: code,
+                    source: `(${code})`,
                     timestamp: new Date().toISOString()
                 });
 
@@ -1269,38 +1264,65 @@
         // Դուրսբերման ձևի մշակում
         document.getElementById('withdrawForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            const amount = parseFloat(document.getElementById('withdraw-amount').value);
+            const requestedAmount = parseFloat(document.getElementById('withdraw-amount').value); // Օգտատիրոջ կողմից հարցված գումարը
             const address = document.getElementById('withdraw-address').value;
             const password = document.getElementById('withdraw-password').value;
             const db = getUsersDB();
             const user = db[userEmail];
             
-            if (user.password !== password) { alert("Սխալ գաղտնաբառ։"); return; }
-            if (amount < 15) { alert("Դուրսբերման նվազագույն գումարը $15 է:"); return; }
-            if (amount > currentBalance) { alert("Մնացորդը բավարար չէ դուրսբերման համար:"); return; }
+            // Հաշվարկել միջնորդավճարը
+            const fee = requestedAmount * WITHDRAWAL_FEE_PERCENTAGE;
+            
+            // Ընդհանուր գումարը, որը պետք է նվազի հաշվից (Հարցված Գումար + Միջնորդավճար)
+            const totalAmountToDeduct = requestedAmount + fee;
 
+            if (user.password !== password) { alert("Սխալ գաղտնաբառ։"); return; }
+            if (requestedAmount < 15) { alert("Դուրսբերման նվազագույն գումարը $15 է:"); return; }
+            
+            // ✅ ՄՆԱՑՈՐԴԻ ՍՏՈՒԳՈՒՄԸ ՄԻՋՆՈՐԴԱՎՃԱՐՈՎ
+            if (totalAmountToDeduct > currentBalance) { 
+                alert(`Մնացորդը բավարար չէ դուրսբերման համար։ Դուք հարցնում եք $${requestedAmount.toFixed(2)}, բայց միջնորդավճարով ($${fee.toFixed(2)}) ընդհանուր անհրաժեշտ է $${totalAmountToDeduct.toFixed(2)}։ Ձեր մնացորդն է $${currentBalance.toFixed(2)}։`); 
+                return; 
+            }
+
+            // Ստեղծել դուրսբերման հարցումը
             const withdrawRequest = {
-                transactionId: 'TRX' + Date.now(), type: 'WITHDRAWAL', user: userEmail, amount: amount,
-                address_to_send: address, status: 'Pending Admin Confirmation', timestamp: new Date().toISOString()
+                transactionId: 'TRX' + Date.now(), 
+                type: 'WITHDRAWAL', 
+                user: userEmail, 
+                amount: requestedAmount, // Դուրսբերվող գումարը (առանց միջնորդավճարի)
+                fee: fee.toFixed(2), // Միջնորդավճարի չափը
+                total_deduction: totalAmountToDeduct.toFixed(2), // Ընդհանուր նվազեցված գումարը
+                address_to_send: address, 
+                status: 'Pending Admin Confirmation', 
+                timestamp: new Date().toISOString()
             };
 
             pendingTransaction = withdrawRequest;
             savePendingTransaction(withdrawRequest); 
             
-            currentBalance -= amount;
+            // Նվազեցնել ընդհանուր գումարը հաշվից
+            currentBalance -= totalAmountToDeduct;
             user.balance = currentBalance;
             db[userEmail] = user;
             saveUsersDB(db);
             
-            // ✅ Գրանցել Դուրսբերման Հարցումը
-            addTransactionToLog(withdrawRequest);
+            // ✅ Գրանցել Դուրսբերման Հարցումը (Լոգում կգնա requestAmount-ը)
+            addTransactionToLog({
+                transactionId: withdrawRequest.transactionId, 
+                type: 'WITHDRAWAL', 
+                user: userEmail, 
+                amount: requestedAmount,
+                status: `Պահված է: ${totalAmountToDeduct.toFixed(2)}$ (Միջնորդավճար՝ ${fee.toFixed(2)}$)`,
+                timestamp: new Date().toISOString()
+            });
 
             document.getElementById('current-balance').textContent = `$ ${currentBalance.toFixed(2)}`;
             
             if (userEmail === ADMIN_EMAIL) {
                 showAdminLog(withdrawRequest);
             } else {
-                 alert(`Դուրսբերման հարցումն ընդունված է։ ${amount}$ Գումարը նվազեցվեց Ձեր մնացորդից և սպասում է Ադմինի հաստատմանը։`);
+                 alert(`Դուրսբերման հարցումն ընդունված է։ ${requestedAmount.toFixed(2)}$ գումարը (Միջնորդավճար՝ $${fee.toFixed(2)}) նվազեցվեց Ձեր մնացորդից։ Սպասում է Ադմինի հաստատմանը։`);
                  showSection('dashboard');
             }
         });
@@ -1356,15 +1378,18 @@
                     trans.status = 'Confirmed (TXID: ' + txid + ')';
                     
                 } else if (trans.type === 'WITHDRAWAL') {
+                    // Գումարը նվազեցվել է դեռ հարցումը ստեղծելիս (ներառյալ միջնորդավճարը)
                     alert(`Դուրսբերումը ${trans.amount}$ ՀԱՍՏԱՏՎԱԾ Է։ Գումարը ուղարկվեց ${trans.address_to_send} հասցեին։`);
                     trans.status = 'Confirmed (Sent)';
                 }
             } else {
                 if (trans.type === 'DEPOSIT') {
                     // Ոչինչ չի փոխվում
+                    
                 } else if (trans.type === 'WITHDRAWAL') {
-                    targetUser.balance = (targetUser.balance || 0) + parseFloat(trans.amount);
-                    alert(`Դուրսբերումը ${trans.amount}$ ՄԵՐԺՎԱԾ Է։ Գումարը վերադարձվեց ${trans.user} հաշվին։`);
+                    // Վերադարձնել գումարը միջնորդավճարով
+                    targetUser.balance = (targetUser.balance || 0) + parseFloat(trans.total_deduction);
+                    alert(`Դուրսբերումը ${trans.amount}$ ՄԵՐԺՎԱԾ Է։ Ընդհանուր գումարը ($${trans.total_deduction}) վերադարձվեց ${trans.user} հաշվին։`);
                 }
                 trans.status = 'Rejected (Admin)';
             }
@@ -1509,4 +1534,3 @@
     </script>
 </body>
 </html>
-
