@@ -173,8 +173,7 @@
         <div id="register-section" class="section">
              <h2>Գրանցում</h2>
             <form id="registrationForm">
-                <div class="form-group"><label for="reg-username">Օգտատիրոջ Անուն</label><input type="text" id="reg-username" required></div>
-                <div class="form-group"><label for="reg-phone">Հեռախոսահամար</label><input type="tel" id="reg-phone" placeholder="+374xxxxxxxx" required></div>
+                <div class="form-group"><label for="reg-email">Էլ. Փոստի Հասցե</label><input type="email" id="reg-email" placeholder="example@mail.com" required></div>
                 <div class="form-group"><label for="reg-password">Գաղտնաբառ</label><input type="password" id="reg-password" required></div>
                 <div class="form-group"><label for="reg-confirmPassword">Կրկնել Գաղտնաբառը</label><input type="password" id="reg-confirmPassword" required></div>
                 <div class="form-group"><label for="reg-referralCode">Ռեֆերալ Կոդ (Ըստ Ցանկության)</label><input type="text" id="reg-referralCode"></div>
@@ -186,7 +185,7 @@
         <div id="login-section" class="section">
             <h2>Մուտք</h2>
             <form id="loginForm">
-                <div class="form-group"><label for="log-phone">Հեռախոսահամար</label><input type="tel" id="log-phone" placeholder="+374xxxxxxxx" required></div>
+                <div class="form-group"><label for="log-email">Էլ. Փոստի Հասցե</label><input type="email" id="log-email" placeholder="example@mail.com" required></div>
                 <div class="form-group"><label for="log-password">Գաղտնաբառ</label><input type="password" id="log-password" required></div>
                 <button type="submit">Մուտք Գործել</button>
             </form>
@@ -406,7 +405,7 @@
             
             <div class="dashboard-info" style="background-color: #f7f7f7; text-align: left;">
                 <p><strong>Կարգավիճակ:</strong> <span id="deposit-status-display" style="color: orange; font-weight: bold;">Սպասում է Ձեր Փոխանցմանը</span></p>
-                <p style="margin-top: 10px;">Խնդրում ենք փոխանցել նշված գումարը ստորև ներկայացված հասցեին:</p>
+                <p style="margin-top: 10px;">Խնդրում ենք փոխանցել նշված գումարը ստորև ներկայացված հասցեին։</p>
             </div>
             
             <h3 style="margin-top: 20px;">Փոխանցելու Դետալները</h3>
@@ -439,18 +438,18 @@
 
     <script>
         // Ընդհանուր փոփոխականներ
-        let userPhone = ''; // ✅ Փոխարինված է userEmail-ի փոխարեն
+        let userEmail = ''; // ✅ Վերականգնված է
         let currentBalance = 0.00;
         
         const MS_PER_DAY = 24 * 60 * 60 * 1000; 
         
-        const ADMIN_PHONE = '+37400000000'; // ✅ Փոխարինված է ADMIN_EMAIL-ի փոխարեն
-        const REFERRAL_BONUS_PERCENTAGE = 0.10; // Ռեֆերալի եկամտի 10%
+        const ADMIN_EMAIL = 'admin@solarstation.com'; // ✅ Վերականգնված է Admin-ի ID-ն
+        const REFERRAL_BONUS_PERCENTAGE = 0.10; 
         const REGISTRATION_BONUS_AMOUNT = 1.00; 
-        const DAILY_BONUS_AMOUNT = 0.10; // Օրական բոնուսի չափը
-        const WITHDRAWAL_FEE_PERCENTAGE = 0.10; // 10% դուրսբերման միջնորդավճար
+        const DAILY_BONUS_AMOUNT = 0.10; 
+        const WITHDRAWAL_FEE_PERCENTAGE = 0.10; 
         
-        // 🚨 ՓՈԽԵՔ ԱՅՍ ՀԱՍՑԵՆ ՁԵՐ ԻՐԱԿԱՆ ԿԱՅՔԻ ՀԱՍՑԵՆՈՎ, որպեսզի ռեֆերալ հղումը աշխատի
+        // 🚨 ՓՈԽԵՔ ԱՅՍ ՀԱՍՑԵՆ ՁԵՐ ԻՐԱԿԱՆ ԿԱՅՔԻ ՀԱՍՑԵՆՈՎ
         const BASE_URL = "https://solarstation1.github.io/Armenia/"; 
         
         let promoCodes = {}; 
@@ -508,8 +507,8 @@
             // Ֆիլտրել միայն ընթացիկ օրվա և ընթացիկ օգտատիրոջ գործարքները
             const dailyTransactions = log.filter(tx => {
                 const txDate = new Date(tx.timestamp).toISOString().split('T')[0];
-                return txDate === today && tx.user === userPhone; // ✅ Փոխարինված է userEmail-ի փոխարեն
-            }).reverse(); // Ամենավերջինը՝ սկզբում
+                return txDate === today && tx.user === userEmail; // ✅ userEmail-ով ֆիլտրում
+            }).reverse(); 
             
             const listElement = document.getElementById('dailyTransactionsList');
             listElement.innerHTML = '';
@@ -522,7 +521,6 @@
                     let typeText = '';
                     let statusColor = '';
                     
-                    // Որոշել գումարի նշանը և գույնը
                     switch (tx.type) {
                         case 'INVESTMENT':
                             amountDisplay = `($ ${tx.amount.toFixed(2)})`;
@@ -531,7 +529,7 @@
                             break;
                         case 'PROFIT_ADDED':
                         case 'REFERRAL_BONUS':
-                        case 'REGISTRATION_BONUS': // Ավելացնել Գրանցման Բոնուսը
+                        case 'REGISTRATION_BONUS': 
                             amountDisplay = `+ $ ${tx.amount.toFixed(2)}`;
                             typeText = `✨ Եկամուտ (${tx.source || 'Ներդրում'})`;
                             statusColor = 'positive';
@@ -549,7 +547,6 @@
                             statusColor = 'positive';
                             break;
                         case 'WITHDRAWAL':
-                            // Ցույց տալ հարցված գումարը և գանձված գումարը
                             const requested = tx.amount.toFixed(2);
                             const deducted = parseFloat(tx.status.match(/Պահված է: ([\d\.]+)\$/)?.[1] || 0).toFixed(2);
                             amountDisplay = `($ ${requested} | Պահ. ${deducted})`;
@@ -590,7 +587,7 @@
 
 
         // ԿՐԻՊՏՈ ՀԱՍՑԵՆԵՐԻ ՑԱՆԿԸ
-      const cryptoAddresses = {
+        const cryptoAddresses = {
             'USDT_TRC20': { display: 'USDT (TRC20)', address: 'TGSpgCgvMssuc2hJhHPokJuwPeDaQFmnFz' },
             'USDT_ERC20': { display: 'USDT (ERC20)', address: '0x0f5561887410f0623f8ba4a0b14600dd9c988447' },
             'BTC': { display: 'Bitcoin (BTC)', address: '175bEsfAiTyekrqLGqqf2Pu1XbgDZHm1dQ' },
@@ -601,6 +598,7 @@
             'XRP': { display: 'Ripple (XRP)', address: 'rNxp4h8apvRis6mJf9Sh8C6iRxfrDWN7AV' },
             'SOL': { display: 'Solana (SOL)', address: 'BeUn4WNfrmo4absSNhHVJwSwXZNPe5QfJsZwitAeA1fw' }
         };
+
 
         // Ֆունկցիա՝ սերվերի (localStorage-ի) տվյալները ստանալու համար
         function getUsersDB() {
@@ -633,7 +631,7 @@
                 
                 codes[code] = {
                     amount: parseFloat(amount),
-                    used: false // Կարգավիճակը
+                    used: false 
                 };
             }
             return codes;
@@ -641,10 +639,10 @@
 
         // ՕՐԱԿԱՆ ԵԿԱՄՏԻ ՀԱՇՎԱՐԿՄԱՆ ԳԼԽԱՎՈՐ ՖՈՒՆԿՑԻԱ (ՆԵՐԱՌՈՒՄ Է ՌԵՖԵՐԱԼԻ ԲՈՆՈՒՍԸ)
         function calculateDailyProfit() {
-            if (!userPhone) return 0; // ✅ Փոխարինված է userEmail-ի փոխարեն
+            if (!userEmail) return 0; // ✅ Օգտագործել userEmail
 
             const db = getUsersDB();
-            const user = db[userPhone]; // ✅ Փոխարինված է userEmail-ի փոխարեն
+            const user = db[userEmail]; // ✅ Օգտագործել userEmail
             let totalProfitAdded = 0;
 
             if (!user) {
@@ -678,7 +676,7 @@
                              addTransactionToLog({
                                 transactionId: 'PRFT' + Date.now() + Math.random(), 
                                 type: 'PROFIT_ADDED', 
-                                user: userPhone, // ✅ Փոխարինված է userEmail-ի փոխարեն
+                                user: userEmail, // ✅ Օգտագործել userEmail
                                 amount: inv.dailyProfit,
                                 source: `(${inv.amount}$ Ներդրում)`,
                                 timestamp: new Date(lastTime + (i+1) * MS_PER_DAY).toISOString()
@@ -697,8 +695,8 @@
             const now = new Date().getTime();
             
             // Ստուգում ենք, թե ովքեր են մեր ռեֆերալները
-            for (const phone in db) { // ✅ Փոխարինված է email-ի փոխարեն
-                const referredUser = db[phone]; // ✅ Փոխարինված է email-ի փոխարեն
+            for (const email in db) { // ✅ Օգտագործել email որպես բանալի
+                const referredUser = db[email]; 
                 // Ստուգել, որ օգտատերը գրանցված է ընթացիկ օգտատիրոջ կոդով
                 if (referredUser.refUsed === user.refCode) {
                     
@@ -718,15 +716,15 @@
                                 hasNewReferralProfit = true;
                                 
                                 referredUser.lastReferralDailyPayoutTime = new Date(lastRefPayoutTime + cyclesPassed * MS_PER_DAY).toISOString().split('T')[0];
-                                db[phone] = referredUser; // ✅ Փոխարինված է email-ի փոխարեն
+                                db[email] = referredUser; // ✅ Օգտագործել email որպես բանալի
                                 
                                 // Գրանցել ռեֆերալի բոնուսը
                                 addTransactionToLog({
                                     transactionId: 'REF' + Date.now() + Math.random(), 
                                     type: 'REFERRAL_BONUS', 
-                                    user: userPhone, // ✅ Փոխարինված է userEmail-ի փոխարեն
+                                    user: userEmail, // ✅ Օգտագործել userEmail
                                     amount: totalNewReferralProfit,
-                                    source: `(${referredUser.username} - ${cyclesPassed} օր)`,
+                                    source: `(${referredUser.email} - ${cyclesPassed} օր)`, // Փոխված է 
                                     timestamp: new Date().toISOString()
                                 });
                             }
@@ -747,7 +745,7 @@
             if (totalProfitAdded > 0) {
                 user.balance += totalProfitAdded;
                 currentBalance = user.balance;
-                db[userPhone] = user; // ✅ Փոխարինված է userEmail-ի փոխարեն
+                db[userEmail] = user; // ✅ Օգտագործել userEmail
                 saveUsersDB(db);
 
                 document.getElementById('current-balance').textContent = `$ ${currentBalance.toFixed(2)}`;
@@ -769,7 +767,7 @@
         // ՕՐԱԿԱՆ ԲՈՆՈՒՍԻ ՏՐԱՄԱԲԱՆՈՒԹՅՈՒՆԸ
         function getDailyBonus() {
             const db = getUsersDB();
-            let user = db[userPhone]; // ✅ Փոխարինված է userEmail-ի փոխարեն
+            let user = db[userEmail]; // ✅ Օգտագործել userEmail
             
             if (!user) {
                 alert("Մուտք գործեք՝ բոնուս ստանալու համար։");
@@ -795,14 +793,14 @@
             user.balance = currentBalance;
             user.lastDailyBonusTime = todayDate;
             
-            db[userPhone] = user; // ✅ Փոխարինված է userEmail-ի փոխարեն
+            db[userEmail] = user; // ✅ Օգտագործել userEmail
             saveUsersDB(db);
             
             // ✅ Գրանցել Օրական Բոնուսը
             addTransactionToLog({
                 transactionId: 'DBONUS' + Date.now(), 
                 type: 'DAILY_BONUS', 
-                user: userPhone, // ✅ Փոխարինված է userEmail-ի փոխարեն
+                user: userEmail, // ✅ Օգտագործել userEmail
                 amount: DAILY_BONUS_AMOUNT,
                 timestamp: new Date().toISOString()
             });
@@ -841,13 +839,13 @@
 
         // Ֆունկցիա, որը բեռնում է օգտատիրոջ տվյալները localStorage-ից
         function loadUserFromStorage() {
-            const storedPhone = localStorage.getItem('activeUserPhone'); // ✅ Փոխարինված է activeUserEmail-ի փոխարեն
-            if (storedPhone) {
+            const storedEmail = localStorage.getItem('activeUserEmail'); // ✅ Վերականգնված է
+            if (storedEmail) {
                 const db = getUsersDB();
-                const user = db[storedPhone];
+                const user = db[storedEmail];
                 
                 if (user) {
-                    userPhone = storedPhone; // ✅ Փոխարինված է userEmail-ի փոխարեն
+                    userEmail = storedEmail; // ✅ Վերականգնված է
                     currentBalance = user.balance;
 
                     // Ավտոմատ անցում dashboard
@@ -861,10 +859,10 @@
         // ՌԵՖԵՐԱԼԻ ՏՎՅԱԼՆԵՐԻ ԹԱՐՄԱՑՄԱՆ ՖՈՒՆԿՑԻԱ
         function updateReferralData(currentRefCode) {
              const db = getUsersDB();
-             let registeredCount = 0; // Գրանցվածների քանակ
-             let bonusTotal = 0.00; // Ստացված բոնուսի գումար (ներառյալ 10%-ը)
+             let registeredCount = 0; 
+             let bonusTotal = 0.00; 
 
-             const currentUser = db[userPhone]; // ✅ Փոխարինված է userEmail-ի փոխարեն
+             const currentUser = db[userEmail]; // ✅ Օգտագործել userEmail
              if (currentUser) {
                  bonusTotal = currentUser.refBonus || 0.00;
              }
@@ -876,8 +874,8 @@
              document.getElementById('referralLinkDisplay').textContent = referralLink;
 
 
-             for (const phone in db) { // ✅ Փոխարինված է email-ի փոխարեն
-                 const otherUser = db[phone]; // ✅ Փոխարինված է email-ի փոխարեն
+             for (const email in db) { // ✅ Օգտագործել email որպես բանալի
+                 const otherUser = db[email]; 
                  // Ստուգում ենք, թե ովքեր են գրանցվել այս կոդով
                  if (otherUser.refUsed === currentRefCode) {
                      registeredCount += 1; 
@@ -885,18 +883,18 @@
              }
 
              document.getElementById('referralCodeDisplay').textContent = currentRefCode;
-             document.getElementById('refCount').textContent = registeredCount; // Թարմացնել քանակը
+             document.getElementById('refCount').textContent = registeredCount; 
              document.getElementById('refBonus').textContent = `+ $ ${bonusTotal.toFixed(2)}`;
              
              // Պահպանել registeredCount-ը user օբյեկտում
              if (currentUser) {
                  currentUser.registeredReferralsCount = registeredCount;
-                 db[userPhone] = currentUser; // ✅ Փոխարինված է userEmail-ի փոխարեն
+                 db[userEmail] = currentUser; // ✅ Օգտագործել userEmail
                  saveUsersDB(db);
              }
         }
         
-        // Հղումը պատճենելու ֆունկցիան (Նոր)
+        // Հղումը պատճենելու ֆունկցիան
         function copyReferralLink() {
              const link = document.getElementById('referralLinkDisplay').textContent;
              navigator.clipboard.writeText(link).then(() => {
@@ -918,7 +916,7 @@
             if (targetSection) {
                 targetSection.style.display = 'block';
                 
-                if (userPhone && (sectionId === 'dashboard' || sectionId === 'investments')) { // ✅ Փոխարինված է userEmail-ի փոխարեն
+                if (userEmail && (sectionId === 'dashboard' || sectionId === 'investments')) { // ✅ Օգտագործել userEmail
                     calculateDailyProfit(); // Կանչել եկամուտի հաշվարկը
                 }
 
@@ -943,7 +941,7 @@
                 // Տարբեր բաժինների կոնկրետ գործողություններ
                 if (sectionId === 'dashboard') {
                     const db = getUsersDB();
-                    const user = db[userPhone]; // ✅ Փոխարինված է userEmail-ի փոխարեն
+                    const user = db[userEmail]; // ✅ Օգտագործել userEmail
                     if (user) updateDailyBonusButtonStatus(user); 
                 }
 
@@ -951,9 +949,9 @@
                     updateActiveInvestmentsList();
                 }
                 
-                if (userPhone && (sectionId === 'dashboard' || sectionId === 'referral')) { // ✅ Փոխարինված է userEmail-ի փոխարեն
+                if (userEmail && (sectionId === 'dashboard' || sectionId === 'referral')) { // ✅ Օգտագործել userEmail
                     const db = getUsersDB();
-                    const user = db[userPhone]; // ✅ Փոխարինված է userEmail-ի փոխարեն
+                    const user = db[userEmail]; // ✅ Օգտագործել userEmail
                     if (user) {
                         updateReferralData(user.refCode);
                     }
@@ -961,7 +959,7 @@
 
                 if (sectionId === 'account') {
                     const adminControlsDiv = document.getElementById('admin-section-controls');
-                    if (userPhone === ADMIN_PHONE) { // ✅ Փոխարինված է ADMIN_EMAIL-ի փոխարեն
+                    if (userEmail === ADMIN_EMAIL) { // ✅ Օգտագործել ADMIN_EMAIL
                         adminControlsDiv.style.display = 'block';
                         loadAllUsersForAdmin();
                         
@@ -992,8 +990,8 @@
 
         // Դուրս գալու ֆունկցիա 
         function logOut() {
-            localStorage.removeItem('activeUserPhone'); // ✅ Փոխարինված է activeUserEmail-ի փոխարեն
-            userPhone = ''; // ✅ Փոխարինված է userEmail-ի փոխարեն
+            localStorage.removeItem('activeUserEmail'); // ✅ Վերականգնված է
+            userEmail = ''; // ✅ Վերականգնված է
             currentBalance = 0.00;
             alert('Դուրս եկաք հաշվից:');
             showSection('login');
@@ -1011,9 +1009,8 @@
             event.preventDefault(); 
             const password = document.getElementById('reg-password').value;
             const confirmPassword = document.getElementById('reg-confirmPassword').value;
-            const regPhone = document.getElementById('reg-phone').value; // ✅ Փոխարինված է regEmail-ի փոխարեն
+            const regEmail = document.getElementById('reg-email').value; // ✅ Վերականգնված է
             const refCodeUsed = document.getElementById('reg-referralCode').value;
-            const username = document.getElementById('reg-username').value;
             const db = getUsersDB();
 
             if (password !== confirmPassword) {
@@ -1021,8 +1018,8 @@
                 return;
             }
 
-            if (db[regPhone]) { // ✅ Փոխարինված է regEmail-ի փոխարեն
-                 alert("Այս հեռախոսահամարն արդեն գրանցված է:");
+            if (db[regEmail]) { // ✅ Օգտագործել regEmail
+                 alert("Այս Էլ. Փոստի հասցեն արդեն գրանցված է:");
                  return;
             }
             
@@ -1030,8 +1027,9 @@
             
             const initialBalance = REGISTRATION_BONUS_AMOUNT; 
 
-            db[regPhone] = { // ✅ Փոխարինված է regEmail-ի փոխարեն
-                username: username,
+            db[regEmail] = { // ✅ Օգտագործել regEmail որպես բանալի
+                // username: username, // Հեռացված է Օգտատիրոջ Անունը
+                email: regEmail,
                 password: password, 
                 balance: initialBalance, 
                 refCode: uniqueRefCode,
@@ -1040,8 +1038,7 @@
                 activeInvestments: [],
                 lastDailyBonusTime: null, 
                 registeredReferralsCount: 0,
-                lastReferralDailyPayoutTime: null,
-                phone: regPhone // Ավելացված է հեռախոսահամարը օբյեկտում
+                lastReferralDailyPayoutTime: null
             };
             saveUsersDB(db);
             
@@ -1049,7 +1046,7 @@
             addTransactionToLog({
                 transactionId: 'REGBONUS' + Date.now(), 
                 type: 'REGISTRATION_BONUS', 
-                user: regPhone, // ✅ Փոխարինված է regEmail-ի փոխարեն
+                user: regEmail, // ✅ Օգտագործել regEmail
                 amount: initialBalance,
                 source: `($${initialBalance.toFixed(2)} բոնուս)`,
                 timestamp: new Date().toISOString()
@@ -1062,25 +1059,25 @@
         // Մուտքի ձևի մշակում
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            const logPhone = document.getElementById('log-phone').value; // ✅ Փոխարինված է logEmail-ի փոխարեն
+            const logEmail = document.getElementById('log-email').value; // ✅ Վերականգնված է
             const logPassword = document.getElementById('log-password').value;
             const db = getUsersDB();
 
-            const user = db[logPhone]; // ✅ Փոխարինված է logEmail-ի փոխարեն
+            const user = db[logEmail]; // ✅ Օգտագործել logEmail
             
             if (user && user.password === logPassword) {
-                localStorage.setItem('activeUserPhone', logPhone); // ✅ Փոխարինված է activeUserEmail-ի փոխարեն
+                localStorage.setItem('activeUserEmail', logEmail); // ✅ Վերականգնված է
 
-                userPhone = logPhone; // ✅ Փոխարինված է userEmail-ի փոխարեն
+                userEmail = logEmail; // ✅ Վերականգնված է
                 currentBalance = user.balance;
 
                 document.getElementById('current-balance').textContent = `$ ${currentBalance.toFixed(2)}`;
-                alert(`Բարի գալուստ, ${user.username}։ Մուտքը հաջող է։`);
+                alert(`Բարի գալուստ, ${user.email}։ Մուտքը հաջող է։`); // Օգտատիրոջ անունը փոխարինված է email-ով
                 showSection('dashboard'); 
                 
                 updateDailyBonusButtonStatus(user);
             } else {
-                alert("Սխալ Հեռախոսահամար կամ Գաղտնաբառ։"); // ✅ Փոխարինված է Email-ի փոխարեն
+                alert("Սխալ Էլ. Փոստի Հասցե կամ Գաղտնաբառ։"); // ✅ Փոխված է
             }
         });
 
@@ -1102,7 +1099,7 @@
             const bonusAmount = promoData.amount;
             
             const db = getUsersDB();
-            let user = db[userPhone]; // ✅ Փոխարինված է userEmail-ի փոխարեն
+            let user = db[userEmail]; // ✅ Օգտագործել userEmail
             
             if (user) {
                 currentBalance += bonusAmount;
@@ -1111,7 +1108,7 @@
                 promoData.used = true;
                 promoCodes[code] = promoData;
                 
-                db[userPhone] = user; // ✅ Փոխարինված է userEmail-ի փոխարեն
+                db[userEmail] = user; // ✅ Օգտագործել userEmail
                 saveUsersDB(db);
                 savePromoCodesDB(promoCodes);
                 
@@ -1119,7 +1116,7 @@
                 addTransactionToLog({
                     transactionId: 'PROMO' + Date.now(), 
                     type: 'PROMO_REDEEM', 
-                    user: userPhone, // ✅ Փոխարինված է userEmail-ի փոխարեն
+                    user: userEmail, // ✅ Օգտագործել userEmail
                     amount: bonusAmount,
                     source: `(${code})`,
                     timestamp: new Date().toISOString()
@@ -1144,7 +1141,7 @@
             currentBalance -= amount;
             
             const db = getUsersDB();
-            let user = db[userPhone]; // ✅ Փոխարինված է userEmail-ի փոխարեն
+            let user = db[userEmail]; // ✅ Օգտագործել userEmail
             
             if (user) {
                 const wasInactive = (user.activeInvestments.length === 0); 
@@ -1160,14 +1157,14 @@
 
                 user.balance = currentBalance;
                 
-                db[userPhone] = user; // ✅ Փոխարինված է userEmail-ի փոխարեն
+                db[userEmail] = user; // ✅ Օգտագործել userEmail
                 saveUsersDB(db);
                 
                 // ✅ Գրանցել Ներդրումը
                 addTransactionToLog({
                     transactionId: 'INV' + newInvestment.id, 
                     type: 'INVESTMENT', 
-                    user: userPhone, // ✅ Փոխարինված է userEmail-ի փոխարեն
+                    user: userEmail, // ✅ Օգտագործել userEmail
                     amount: amount,
                     profit: dailyProfit,
                     timestamp: new Date().toISOString()
@@ -1188,7 +1185,7 @@
         // Ակտիվ Ներդրումների Ցուցակի Թարմացում
         function updateActiveInvestmentsList() {
             const db = getUsersDB();
-            const user = db[userPhone]; // ✅ Փոխարինված է userEmail-ի փոխարեն
+            const user = db[userEmail]; // ✅ Օգտագործել userEmail
             const listElement = document.getElementById('activeInvestmentsList');
             listElement.innerHTML = ''; 
 
@@ -1230,7 +1227,7 @@
             const depositRequest = {
                 transactionId: 'TRX' + Date.now(), 
                 type: 'DEPOSIT', 
-                user: userPhone, // ✅ Փոխարինված է userEmail-ի փոխարեն
+                user: userEmail, // ✅ Օգտագործել userEmail
                 amount: amount.toFixed(2),
                 currency: networkInfo.display, 
                 address_to_send: networkInfo.address, 
@@ -1276,7 +1273,7 @@
             
             alert(`✅ Տեղեկացումը հաջողությամբ ուղարկվեց։ Գործարքը սպասում է Ադմինի հաստատմանը։`);
             
-            if (userPhone === ADMIN_PHONE) { // ✅ Փոխարինված է ADMIN_EMAIL-ի փոխարեն
+            if (userEmail === ADMIN_EMAIL) { // ✅ Օգտագործել ADMIN_EMAIL
                  showAdminLog(pendingTransaction);
             }
             
@@ -1297,11 +1294,11 @@
         // Դուրսբերման ձևի մշակում
         document.getElementById('withdrawForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            const requestedAmount = parseFloat(document.getElementById('withdraw-amount').value); // Օգտատիրոջ կողմից հարցված գումարը
+            const requestedAmount = parseFloat(document.getElementById('withdraw-amount').value); 
             const address = document.getElementById('withdraw-address').value;
             const password = document.getElementById('withdraw-password').value;
             const db = getUsersDB();
-            const user = db[userPhone]; // ✅ Փոխարինված է userEmail-ի փոխարեն
+            const user = db[userEmail]; // ✅ Օգտագործել userEmail
             
             // Հաշվարկել միջնորդավճարը
             const fee = requestedAmount * WITHDRAWAL_FEE_PERCENTAGE;
@@ -1322,10 +1319,10 @@
             const withdrawRequest = {
                 transactionId: 'TRX' + Date.now(), 
                 type: 'WITHDRAWAL', 
-                user: userPhone, // ✅ Փոխարինված է userEmail-ի փոխարեն
-                amount: requestedAmount, // Դուրսբերվող գումարը (առանց միջնորդավճարի)
-                fee: fee.toFixed(2), // Միջնորդավճարի չափը
-                total_deduction: totalAmountToDeduct.toFixed(2), // Ընդհանուր նվազեցված գումարը
+                user: userEmail, // ✅ Օգտագործել userEmail
+                amount: requestedAmount, 
+                fee: fee.toFixed(2), 
+                total_deduction: totalAmountToDeduct.toFixed(2), 
                 address_to_send: address, 
                 status: 'Pending Admin Confirmation', 
                 timestamp: new Date().toISOString()
@@ -1337,14 +1334,14 @@
             // Նվազեցնել ընդհանուր գումարը հաշվից
             currentBalance -= totalAmountToDeduct;
             user.balance = currentBalance;
-            db[userPhone] = user; // ✅ Փոխարինված է userEmail-ի փոխարեն
+            db[userEmail] = user; // ✅ Օգտագործել userEmail
             saveUsersDB(db);
             
-            // ✅ Գրանցել Դուրսբերման Հարցումը (Լոգում կգնա requestAmount-ը)
+            // ✅ Գրանցել Դուրսբերման Հարցումը 
             addTransactionToLog({
                 transactionId: withdrawRequest.transactionId, 
                 type: 'WITHDRAWAL', 
-                user: userPhone, // ✅ Փոխարինված է userEmail-ի փոխարեն
+                user: userEmail, // ✅ Օգտագործել userEmail
                 amount: requestedAmount,
                 status: `Պահված է: ${totalAmountToDeduct.toFixed(2)}$ (Միջնորդավճար՝ ${fee.toFixed(2)}$)`,
                 timestamp: new Date().toISOString()
@@ -1352,7 +1349,7 @@
 
             document.getElementById('current-balance').textContent = `$ ${currentBalance.toFixed(2)}`;
             
-            if (userPhone === ADMIN_PHONE) { // ✅ Փոխարինված է ADMIN_EMAIL-ի փոխարեն
+            if (userEmail === ADMIN_EMAIL) { // ✅ Օգտագործել ADMIN_EMAIL
                 showAdminLog(withdrawRequest);
             } else {
                  alert(`Դուրսբերման հարցումն ընդունված է։ ${requestedAmount.toFixed(2)}$ գումարը (Միջնորդավճար՝ $${fee.toFixed(2)}) նվազեցվեց Ձեր մնացորդից։ Սպասում է Ադմինի հաստատմանը։`);
@@ -1366,7 +1363,7 @@
             const adminTXID = document.getElementById('admin-txid').value;
             
             const db = getUsersDB();
-            const adminUser = db[ADMIN_PHONE]; // ✅ Փոխարինված է ADMIN_EMAIL-ի փոխարեն
+            const adminUser = db[ADMIN_EMAIL]; // ✅ Օգտագործել ADMIN_EMAIL
 
             if (!pendingTransaction) {
                  alert("Չկա սպասվող գործարք։");
@@ -1390,7 +1387,7 @@
         function confirmTransaction(isConfirmed, txid = 'N/A') {
             const trans = pendingTransaction;
             const db = getUsersDB();
-            let targetUser = db[trans.user]; // Օգտատիրոջ հեռախոսահամարը որպես բանալի
+            let targetUser = db[trans.user]; // Օգտատիրոջ email-ը որպես բանալի
 
             if (!targetUser) { 
                 alert("Սխալ։ Թիրախային օգտատերը գտնված չէ։");
@@ -1411,13 +1408,11 @@
                     trans.status = 'Confirmed (TXID: ' + txid + ')';
                     
                 } else if (trans.type === 'WITHDRAWAL') {
-                    // Գումարը նվազեցվել է դեռ հարցումը ստեղծելիս (ներառյալ միջնորդավճարը)
                     alert(`Դուրսբերումը ${trans.amount}$ ՀԱՍՏԱՏՎԱԾ Է։ Գումարը ուղարկվեց ${trans.address_to_send} հասցեին։`);
                     trans.status = 'Confirmed (Sent)';
                 }
             } else {
                 if (trans.type === 'DEPOSIT') {
-                    // Ոչինչ չի փոխվում
                     
                 } else if (trans.type === 'WITHDRAWAL') {
                     // Վերադարձնել գումարը միջնորդավճարով
@@ -1447,7 +1442,7 @@
             db[trans.user] = targetUser;
             saveUsersDB(db);
 
-            if (userPhone === ADMIN_PHONE) { // ✅ Փոխարինված է ADMIN_EMAIL-ի փոխարեն
+            if (userEmail === ADMIN_EMAIL) { // ✅ Օգտագործել ADMIN_EMAIL
                 showSection('account');
             } else {
                 currentBalance = targetUser.balance;
@@ -1468,20 +1463,20 @@
             const listElement = document.getElementById('admin-user-list');
             
             let htmlContent = '<style>#admin-user-list table { width: 100%; border-collapse: collapse; margin-top: 15px; } #admin-user-list th, #admin-user-list td { border: 1px solid #dee2e6; padding: 8px; text-align: left; } #admin-user-list th { background-color: var(--primary-color); color: white; } #admin-user-list tr:nth-child(even) { background-color: #f8f9fa; } .balance-cell { color: #28a745; font-weight: bold; }</style><table>';
-            htmlContent += '<thead><tr><th>Անուն/Հեռախոս</th><th>Մնացորդ</th><th>Ռեֆ. Կոդ</th><th>Ներդրումներ</th></tr></thead>'; // ✅ Փոխարինված է Email-ի փոխարեն
+            htmlContent += '<thead><tr><th>Էլ. Փոստ</th><th>Մնացորդ</th><th>Ռեֆ. Կոդ</th><th>Ներդրումներ</th></tr></thead>'; // ✅ Փոխված է
             htmlContent += '<tbody>';
             
             let totalBalance = 0;
             
-            for (const phone in db) { // ✅ Փոխարինված է email-ի փոխարեն
-                const user = db[phone];
+            for (const email in db) { // ✅ Օգտագործել email որպես բանալի
+                const user = db[email];
                 totalBalance += user.balance;
                 
                 const refCount = user.registeredReferralsCount || 0; 
                 
                 htmlContent += `
                     <tr>
-                        <td><strong>${user.username}</strong><br><small>${user.phone}</small></td> <td class="balance-cell">$ ${user.balance.toFixed(2)}</td>
+                        <td><strong>${user.email || email}</strong></td> <td class="balance-cell">$ ${user.balance.toFixed(2)}</td>
                         <td>${user.refCode}</td>
                         <td style="text-align: center;">${user.activeInvestments.length}</td>
                     </tr>
@@ -1514,32 +1509,40 @@
                 
                 if (Object.keys(localDB).length === 0) {
                     const initialDB = {
-                        "+37400000000": { // ✅ Փոխարինված է Admin-ի ID-ն
-                            username: "Admin", password: "admin", balance: 10000.00, refCode: "ADMIN001", refUsed: null, refBonus: 0.00, activeInvestments: [], lastDailyBonusTime: null, registeredReferralsCount: 0, lastReferralDailyPayoutTime: null, phone: "+37400000000"
+                        "admin@solarstation.com": { // ✅ Վերականգնված է Admin-ի ID-ն
+                            email: "admin@solarstation.com", password: "admin", balance: 10000.00, refCode: "ADMIN001", refUsed: null, refBonus: 0.00, activeInvestments: [], lastDailyBonusTime: null, registeredReferralsCount: 0, lastReferralDailyPayoutTime: null
                         },
-                        "+37499123456": { // ✅ Փոխարինված է Test User-ի ID-ն
-                             username: "Test User", password: "123", balance: 51.00, refCode: "SOLAR95103", refUsed: "ADMIN001", refBonus: 0.00, activeInvestments: [{ id: 1678886400000, amount: 20, dailyProfit: 1.1, lastProfitTime: new Date(Date.now() - 3 * MS_PER_DAY).toISOString(), cyclesCounted: 3 }], lastDailyBonusTime: null, registeredReferralsCount: 0, lastReferralDailyPayoutTime: null, phone: "+37499123456"
+                        "test@example.com": { // ✅ Վերականգնված է Test User-ի ID-ն
+                             email: "test@example.com", password: "123", balance: 51.00, refCode: "SOLAR95103", refUsed: "ADMIN001", refBonus: 0.00, activeInvestments: [{ id: 1678886400000, amount: 20, dailyProfit: 1.1, lastProfitTime: new Date(Date.now() - 3 * MS_PER_DAY).toISOString(), cyclesCounted: 3 }], lastDailyBonusTime: null, registeredReferralsCount: 0, lastReferralDailyPayoutTime: null
                         }
                     };
                     saveUsersDB(initialDB);
                     console.log("✅ Սկզբնական Օգտատերերը բեռնվեցին localStorage-ում։");
                 } else {
                     let updated = false;
-                    for (let phone in localDB) { // ✅ Փոխարինված է email-ի փոխարեն
-                        if (localDB[phone].lastDailyBonusTime === undefined) {
-                            localDB[phone].lastDailyBonusTime = null;
+                    for (let email in localDB) { // ✅ Օգտագործել email որպես բանալի
+                        // Մաքրել հին դաշտերը (օրինակ՝ phone-ը, եթե կա)
+                        if (localDB[email].phone !== undefined) {
+                            delete localDB[email].phone;
                             updated = true;
                         }
-                        if (localDB[phone].lastReferralDailyPayoutTime === undefined) {
-                             localDB[phone].lastReferralDailyPayoutTime = null;
+                        // Ավելացնել email դաշտը, եթե բացակայում է
+                        if (localDB[email].email === undefined) { 
+                             localDB[email].email = email;
                              updated = true;
                         }
-                        if (localDB[phone].isBonusGiven !== undefined) {
-                             delete localDB[phone].isBonusGiven; 
-                             updated = true;
+                        // Մաքրել username դաշտը
+                        if (localDB[email].username !== undefined) {
+                            delete localDB[email].username;
+                            updated = true;
                         }
-                        if (localDB[phone].phone === undefined) { // Ավելացնել phone դաշտը, եթե բացակայում է
-                             localDB[phone].phone = phone;
+                        // Ապահովել նոր դաշտերը
+                        if (localDB[email].lastDailyBonusTime === undefined) {
+                            localDB[email].lastDailyBonusTime = null;
+                            updated = true;
+                        }
+                        if (localDB[email].lastReferralDailyPayoutTime === undefined) {
+                             localDB[email].lastReferralDailyPayoutTime = null;
                              updated = true;
                         }
                     }
@@ -1569,10 +1572,8 @@
             const refCode = urlParams.get('ref'); 
             
             if (refCode) {
-                // Եթե ref պարամետրը կա, պահպանել այն և անցնել գրանցման բաժին
                 showSection('register'); 
                 
-                // Փորձել լրացնել դաշտը, եթի հասանելի է
                 const refField = document.getElementById('reg-referralCode');
                 if (refField) {
                     refField.value = refCode;
